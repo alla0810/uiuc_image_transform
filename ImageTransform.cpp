@@ -72,8 +72,8 @@ PNG createSpotlight(PNG image, int centerX, int centerY) {
     for (unsigned y = 0; y < image.height(); y++) {
       HSLAPixel & pixel = image.getPixel(x, y);
 
-      double x_dist = (centerX >= x) ? (centerX - x) : (x - centerX);
-      double y_dist = (centerY >= y) ? (centerY - y) : (y - centerY);
+      double x_dist = (centerX >= (double)x) ? (centerX - (double)x) : ((double)x - centerX);
+      double y_dist = (centerY >= (double)y) ? (centerY - (double)y) : ((double)y - centerY);
       double euc_dist = sqrt(x_dist*x_dist + y_dist*y_dist);
 
       double orig_l = pixel.l;
@@ -108,8 +108,16 @@ PNG illinify(PNG image) {
       HSLAPixel & pixel = image.getPixel(x, y);
 
       double orig_h = pixel.h;
-      double dist_from_illi_orange = (orig_h > 11) ? (orig_h - 11): (11-orig_h);
-      double dist_from_illi_blue = (orig_h > 216) ? (orig_h - 216) : (216-orig_h);
+      double dist_from_illi_orange = 0;
+      double dist_from_illi_blue = 0;
+      
+      if (orig_h >= 0 && orig_h < 11) dist_from_illi_orange = 11 - orig_h;
+      else if (orig_h >= 11 && orig_h <= 191) dist_from_illi_orange = orig_h - 11;
+      else if (orig_h > 191 && orig_h <= 360) dist_from_illi_orange = 360 - orig_h + 11;
+      
+      if (orig_h >= 36 && orig_h <= 216) dist_from_illi_blue = 216 - orig_h;
+      else if (orig_h > 216 && orig_h <= 360) dist_from_illi_blue = orig_h - 216;
+      else if (orig_h >= 0 && orig_h < 36) dist_from_illi_blue = 360 - orig_h + 36;
       
       pixel.h = (dist_from_illi_orange <= dist_from_illi_blue) ? 11 : 216;
     }
